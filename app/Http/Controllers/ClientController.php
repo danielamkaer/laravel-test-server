@@ -29,7 +29,7 @@ class ClientController extends Controller
         } else {
             $testRun = new TestRun(['run_number'=>1]);
         }
-        $testRun->start_time = \Carbon\Carbon::now();
+        $testRun->start_time = \Carbon\Carbon::now();
         $test_to_run->test_runs()->save($testRun);
         return response($test_to_run->stdin);
     }
