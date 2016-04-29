@@ -23,13 +23,15 @@
                         <tr>
                             <td><a href="{{url('tests/'.$test->id)}}">{{$test->name}}</a></td>
                             <td>{{$test->runs}}</td>
-                            <td>{{count($test->runs_completed)}}</td>
-                            <td>{{$test->updated_at}}</td>
+                            <td>{{count($test->test_runs) }}</td>
+                            <td class="moment-time">{{$test->updated_at->toRfc2822String()}}</td>
                             <td></td>
                         </tr>
                         @endforeach
                     </tbody>
+
                 </table>
+                <div class="panel-footer"><a class="btn btn-success" href="{{url('tests/create')}}">Create test</a></div>
             </div>
         </div>
     </div>

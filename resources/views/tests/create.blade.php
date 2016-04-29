@@ -10,7 +10,7 @@
                     <form action="{{url('tests')}}" method="post">
                         <input type="hidden" name="_token" value="{{csrf_token()}}">
                         <div class="form-group"><label>Test Name</label><input class="form-control" type="text" name="name"></div>
-                        <div class="form-group"><label>Runs</label><input class="form-control" type="numeric" name="runs"></div>
+                        <div class="form-group"><label>Runs</label><input class="form-control" type="number" name="runs"></div>
                         <div class="form-group"><label>Stdin</label>
                             <textarea name="stdin" cols="30" rows="10" class="form-control"></textarea>
                         </div>
