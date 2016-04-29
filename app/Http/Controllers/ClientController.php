@@ -25,10 +25,11 @@ class ClientController extends Controller
             return response("Try Again Later", 503);
         }
         if (count($test_to_run->test_runs) > 0) {
-            $testRun = new TestRun( ['run_number' => ($test_to_run->test_runs->last()->run_number+1) ]);
+            $testRun = new TestRun( ['run_number' => ($test_to_run->test_runs->last()->run_number+1)]);
         } else {
             $testRun = new TestRun(['run_number'=>1]);
         }
+        $testRun->start_time = \Carbon\Carbon::now();
         $test_to_run->test_runs()->save($testRun);
         return response($test_to_run->stdin);
     }
@@ -44,6 +45,7 @@ class ClientController extends Controller
     public function endTest(Request $request) {
         $testRun = TestRun::with('test')->orderBy('id','desc')->take(1)->first();
         $testRun->completed = true;
+        $testRun->end_time = \Carbon\Carbon::now();
         if ($testRun->save()) {
             return response("OK");
         } else {
@@ -88,11 +90,24 @@ class ClientController extends Controller
             if (!is_dir($savePath))
                 mkdir($savePath,0755,true);
 
-            $file = $request->file('uploaded_file')->move($savePath, $filename);
+            $file = $request->file('uploaded_file')->move($savePath,$request->file('uploaded_file')->getClientOriginalName());
             $testFile = new TestFile(['name'=>$filename, 'filename'=>$file->getPathname()]);
             if ($testRun->files()->save($testFile))
                 return response("OK");
         }
         return response("File not saved",500);
+    }
+
+    public function hasFile(Request $request) {
+        $testRun = TestRun::with('test')->with('files')->orderBy('id','desc')->take(1)->first();
+        if (!$testRun || $testRun->completed) {
+            return response('No test running',404);
+        }
+        $filename = $request->get('filename');
+        if ($testRun->files->first(function($key,$row) use ($filename) { return $row->name == $filename; })) {
+            return response("OK");
+        } else {
+            return response('File not uploaded.',404);
+        }
     }
 }

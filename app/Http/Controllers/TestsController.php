@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Test;
+use App\TestFile;
+use App\TestRun;
 
 class TestsController extends Controller
 {
@@ -50,7 +52,8 @@ class TestsController extends Controller
      */
     public function show($id)
     {
-        //
+        $test = Test::with('test_runs')->findOrFail($id);
+        return view('tests.show',['test'=>$test]);
     }
 
     /**
@@ -61,7 +64,8 @@ class TestsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $test = Test::findOrFail($id);
+        return view('tests.edit',['test'=>$test]);
     }
 
     /**
@@ -73,7 +77,9 @@ class TestsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $test = Test::findOrFail($id);
+        $test->update($request->all());
+        return redirect('tests/'.$id);
     }
 
     /**
@@ -86,4 +92,19 @@ class TestsController extends Controller
     {
         //
     }
+
+    public function getFile($test_id, $file_id) {
+        $file = TestFile::findOrFail($file_id);
+        return response()->download($file->filename, basename($file->filename));
+    }
+
+	public function getStdout($test_id, $run_id) {
+		$run = TestRun::findOrFail($run_id);
+		return response($run->stdout)->header('Content-type','text/plain');
+	}
+
+	public function getStderr($test_id, $run_id) {
+		$run = TestRun::findOrFail($run_id);
+		return response($run->stderr)->header('Content-type','text/plain');
+	}
 }
