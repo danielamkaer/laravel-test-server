@@ -29,7 +29,7 @@
                     </thead>
                     <tbody>
                         @foreach ($test->test_runs as $run)
-                        <tr>
+                            <tr @if (!$run->completed) class="success" @endif>
                             <td>{{$run->run_number}}</td>
                             <td>{{$run->completed?'Yes':'No'}}
                                 @if ($run->completed)

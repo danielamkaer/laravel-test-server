@@ -30,3 +30,8 @@ Route::post('/client/stderr','ClientController@postStderr');
 Route::post('/client/upload_file','ClientController@uploadFile');
 Route::get('/client/current','ClientController@currentTest');
 Route::get('/client/has_file','ClientController@hasFile');
+
+Route::resource('/api/tests','API\TestsController');
+Route::resource('/api/tests/{test_id}/runs','API\TestRunsController');
+Route::resource('/api/tests/{test_id}/runs/{run_id}/files','API\TestFilesController');
+Route::get('/api/tests/{test_id}/runs/{run_id}/files/{file_id}/download','API\TestFilesController@downloadFile');

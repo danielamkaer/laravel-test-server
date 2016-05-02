@@ -1,28 +1,23 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use App\Test;
-use App\TestFile;
+use App\Http\Controllers\Controller;
 use App\TestRun;
 
-class TestsController extends Controller
+class TestRunsController extends Controller
 {
-    public function __construct() {
-        $this->middleware('auth');
-    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($test_id)
     {
-        $tests = Test::with('test_runs')->get();
-        return view('tests.index',['tests'=>$tests]);
+        return response()->json(TestRun::select('id','test_id','run_number','completed','start_time','end_time','created_at','updated_at')->where(['test_id'=>$test_id])->get());
     }
 
     /**
@@ -32,7 +27,7 @@ class TestsController extends Controller
      */
     public function create()
     {
-        return view('tests.create');
+        //
     }
 
     /**
@@ -43,8 +38,7 @@ class TestsController extends Controller
      */
     public function store(Request $request)
     {
-        $test = Test::create($request->all());
-        return redirect('tests');
+        //
     }
 
     /**
@@ -53,10 +47,9 @@ class TestsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($test_id,$id)
     {
-        $test = Test::with('test_runs')->findOrFail($id);
-        return view('tests.show',['test'=>$test]);
+        return response()->json(TestRun::findOrFail($id));
     }
 
     /**
@@ -67,8 +60,7 @@ class TestsController extends Controller
      */
     public function edit($id)
     {
-        $test = Test::findOrFail($id);
-        return view('tests.edit',['test'=>$test]);
+        //
     }
 
     /**
@@ -80,9 +72,7 @@ class TestsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $test = Test::findOrFail($id);
-        $test->update($request->all());
-        return redirect('tests/'.$id);
+        //
     }
 
     /**
@@ -95,19 +85,4 @@ class TestsController extends Controller
     {
         //
     }
-
-    public function getFile($test_id, $file_id) {
-        $file = TestFile::findOrFail($file_id);
-        return response()->download($file->filename, basename($file->filename));
-    }
-
-	public function getStdout($test_id, $run_id) {
-		$run = TestRun::findOrFail($run_id);
-		return response($run->stdout)->header('Content-type','text/plain');
-	}
-
-	public function getStderr($test_id, $run_id) {
-		$run = TestRun::findOrFail($run_id);
-		return response($run->stderr)->header('Content-type','text/plain');
-	}
 }
